@@ -44,7 +44,7 @@ function AddTodo({ editTodo, setEditTodo }) {
             
             <div className="flex flex-col gap-2">
                 <p className="text-gray-600 text-sm font-medium">Select task priority:</p>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
                     {["High", "Medium", "Low"].map((level) => (
                         <label key={level} className={`cursor-pointer px-5 py-2 rounded-md border-2 font-medium transition-all duration-200 
                             ${priority === level 
