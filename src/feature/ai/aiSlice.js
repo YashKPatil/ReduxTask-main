@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Replace with your Google Gemini AI API Key
-const API_KEY = "AIzaSyDcuDymXC2j06_7ln97KBCVvDRmjtB7x8Q";
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
 // Load AI insights from localStorage
@@ -26,7 +26,7 @@ export const fetchAIInsight = createAsyncThunk(
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Give useful insights or recommendations for this task in one line or in few words: "${taskText}"` }] }]
+                    contents: [{ parts: [{ text: `Give useful insights or recommendations for this task in one line or in few words.answer like you are giving some usefull insight to the user about that task: "${taskText}"` }] }]
                 })
             });
 
