@@ -4,6 +4,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const API_KEY = "AIzaSyDcuDymXC2j06_7ln97KBCVvDRmjtB7x8Q";
 const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
+// Load AI insights from localStorage
+const loadAIInsightsFromLocalStorage = () => {
+    const savedInsights = localStorage.getItem("ai_insights");
+    return savedInsights ? JSON.parse(savedInsights) : {};
+};
+
+// Save AI insights to localStorage
+const saveAIInsightsToLocalStorage = (insights) => {
+    localStorage.setItem("ai_insights", JSON.stringify(insights));
+};
+
 // Async Thunk to Fetch AI Insights
 export const fetchAIInsight = createAsyncThunk(
     "ai/fetchAIInsight",
@@ -26,11 +37,11 @@ export const fetchAIInsight = createAsyncThunk(
             }
 
             const data = await response.json();
-            console.log("API Response Data:", data);  // 👈 Log the actual response
+            console.log("API Response Data:", data);
 
             return data?.candidates?.[0]?.content?.parts?.[0]?.text || "No insights available.";
         } catch (error) {
-            console.error("Fetch Error:", error.message);  // 👈 Log the error if request fails
+            console.error("Fetch Error:", error.message);
             return rejectWithValue(error.message);
         }
     }
@@ -39,7 +50,7 @@ export const fetchAIInsight = createAsyncThunk(
 const aiSlice = createSlice({
     name: "ai",
     initialState: {
-        insights: {},
+        insights: loadAIInsightsFromLocalStorage(),
         loading: false,
         error: null,
     },
@@ -53,6 +64,7 @@ const aiSlice = createSlice({
             .addCase(fetchAIInsight.fulfilled, (state, action) => {
                 state.loading = false;
                 state.insights[action.meta.arg] = action.payload;
+                saveAIInsightsToLocalStorage(state.insights);  // ✅ Save insights to localStorage
             })
             .addCase(fetchAIInsight.rejected, (state, action) => {
                 state.loading = false;

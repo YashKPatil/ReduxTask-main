@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeTodo, loadTodos } from '../feature/todo/todoSlice';
+import { fetchAIInsight } from '../feature/ai/aiSlice';
 import AddTodo from './AddTodo';
 
 const priorityColors = {
@@ -12,17 +13,23 @@ const priorityColors = {
 function Todos() {
     const dispatch = useDispatch();
     const todos = useSelector(state => state.todos?.todos || []);
-    const aiInsights = useSelector(state => state.ai.insights);
+    const aiInsights = useSelector(state => state.ai.insights || {});
 
     const [editTodo, setEditTodo] = useState(null);
 
+    // Load todos from localStorage on mount
     useEffect(() => {
         dispatch(loadTodos());
     }, [dispatch]);
 
+    // Fetch AI insights if not already available in localStorage
     useEffect(() => {
-        console.log("AI Insights:", aiInsights);
-    }, [aiInsights]);
+        todos.forEach(todo => {
+            if (!aiInsights[todo.text]) {
+                dispatch(fetchAIInsight(todo.text));
+            }
+        });
+    }, [dispatch, todos, aiInsights]);
 
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white shadow-xl rounded-lg">
@@ -35,7 +42,7 @@ function Todos() {
                     <div key={todo.id} className="relative">
                         {/* Todo Item */}
                         <li 
-                            className={`p-3 border-l-8 rounded-lg text-white flex justify-between items-center shadow-md transition-all duration-300 ${priorityColors[todo.priority]}`}
+                            className={`p-3 border-l-8 rounded-lg text-white flex flex-col md:flex-row justify-between items-center shadow-md transition-all duration-300 ${priorityColors[todo.priority]}`}
                             style={{ wordWrap: "break-word", overflowWrap: "break-word", whiteSpace: "normal" }} 
                         >    
                             <div>
@@ -63,7 +70,7 @@ function Todos() {
                             <p className="text-sm text-gray-700">
                                 <strong className="text-blue-600">🤖 AI Insight:</strong><br />
                                 {aiInsights[todo.text] 
-                                    ? aiInsights[todo.text].replace(/\*/g, "").replace(/\*\*/g, "")  // ✅ Removes * and **
+                                    ? aiInsights[todo.text].replace(/\*/g, "").replace(/\*\*/g, "")  
                                     : <span className="text-gray-500 italic"> Fetching AI suggestion... </span>
                                 }
                             </p>
