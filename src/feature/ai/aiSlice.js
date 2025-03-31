@@ -26,7 +26,7 @@ export const fetchAIInsight = createAsyncThunk(
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Give useful insights or recommendations for this task in one line or in few words : "${taskText}"` }] }]
+                    contents: [{ parts: [{ text: `Give useful insights or recommendations for this task in one line or in few words.as you are giving suggestion on todo list tasks : "${taskText}"` }] }]
                 })
             });
 
